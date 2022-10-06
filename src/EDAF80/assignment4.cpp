@@ -58,6 +58,51 @@ edaf80::Assignment4::run()
 		return;
 	}
 
+	GLuint wave_shader = 0u;
+	program_manager.CreateAndRegisterProgram("Wave",
+		{ { ShaderType::vertex, "common/wave.vert" },
+		  { ShaderType::fragment, "common/wave.frag" } },
+		wave_shader);
+	if (wave_shader == 0u) {
+		LogError("Failed to load wave shader");
+		return;
+	}
+
+	GLuint skybox_shader = 0u;
+	program_manager.CreateAndRegisterProgram("Skybox",
+		{ { ShaderType::vertex, "EDAF80/skybox.vert" },
+		  { ShaderType::fragment, "EDAF80/skybox.frag" } },
+		skybox_shader);
+	if (skybox_shader == 0u)
+		LogError("Failed to load skybox shader");
+
+	auto const light_position = glm::vec3(-2.0f, 4.0f, 2.0f);
+	auto const set_uniforms = [&light_position](GLuint program) {
+		glUniform3fv(glGetUniformLocation(program, "light_position"), 1, glm::value_ptr(light_position));
+	};
+
+	auto skybox_shape = parametric_shapes::createSphere(20.0f, 100u, 100u);
+	if (skybox_shape.vao == 0u) {
+		LogError("Failed to retrieve the mesh for the skybox");
+		return;
+	}
+
+	Node skybox;
+
+	GLuint cubemap = bonobo::loadTextureCubeMap(
+		config::resources_path("cubemaps/NissiBeach2/posx.jpg"),
+		config::resources_path("cubemaps/NissiBeach2/negx.jpg"),
+		config::resources_path("cubemaps/NissiBeach2/posy.jpg"),
+		config::resources_path("cubemaps/NissiBeach2/negy.jpg"),
+		config::resources_path("cubemaps/NissiBeach2/posz.jpg"),
+		config::resources_path("cubemaps/NissiBeach2/negz.jpg"));
+
+	skybox.set_geometry(skybox_shape);
+	skybox.add_texture("cubemap", cubemap, GL_TEXTURE_CUBE_MAP);
+	skybox.set_program(&skybox_shader, set_uniforms);
+
+
+
 	//
 	// Todo: Insert the creation of other shader programs.
 	//       (Check how it was done in assignment 3.)
@@ -68,6 +113,8 @@ edaf80::Assignment4::run()
 	//
 	// Todo: Load your geometry
 	//
+
+	auto quad = parametric_shapes::createQuad(100.0f, 100.0f, 1000, 1000);
 
 	glClearDepthf(1.0f);
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -150,6 +197,18 @@ edaf80::Assignment4::run()
 			//
 			// Todo: Render all your geometry here.
 			//
+
+			//Rendering the quad
+			auto quadratic = Node();
+			quadratic.set_geometry(quad);
+			quadratic.set_program(&fallback_shader, set_uniforms);
+			TRSTransformf& circle_rings_transform_ref = quadratic.get_transform();
+			quadratic.render(mCamera.GetWorldToClipMatrix());
+
+			//Updating the elapsed time
+			elapsed_time_s += std::chrono::duration<float>(deltaTimeUs).count();
+			GLuint program;
+			glUniform1f(glGetUniformLocation(wave_shader, "t"), elapsed_time_s);
 		}
 
 

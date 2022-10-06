@@ -83,6 +83,23 @@ edaf80::Assignment3::run()
 	if (texcoord_shader == 0u)
 		LogError("Failed to load texcoord shader");
 
+	GLuint skybox_shader = 0u;
+	program_manager.CreateAndRegisterProgram("Skybox",
+											{ { ShaderType::vertex, "EDAF80/skybox.vert" },
+											  { ShaderType::fragment, "EDAF80/skybox.frag" } },
+		skybox_shader);
+	if (skybox_shader == 0u)
+		LogError("Failed to load skybox shader");
+
+	GLuint phong_shader = 0u;
+	program_manager.CreateAndRegisterProgram("Phong",
+											{ { ShaderType::vertex, "EDAF80/phong.vert" },
+											  { ShaderType::fragment, "EDAF80/phong.frag" } },
+		phong_shader);
+	if (phong_shader == 0u)
+		LogError("Failed to load phong shader");
+
+
 	auto light_position = glm::vec3(-2.0f, 4.0f, 2.0f);
 	auto const set_uniforms = [&light_position](GLuint program){
 		glUniform3fv(glGetUniformLocation(program, "light_position"), 1, glm::value_ptr(light_position));
@@ -96,7 +113,6 @@ edaf80::Assignment3::run()
 		glUniform3fv(glGetUniformLocation(program, "camera_position"), 1, glm::value_ptr(camera_position));
 	};
 
-
 	//
 	// Set up the two spheres used.
 	//
@@ -107,8 +123,18 @@ edaf80::Assignment3::run()
 	}
 
 	Node skybox;
+
+	GLuint cubemap = bonobo::loadTextureCubeMap(
+		config::resources_path("cubemaps/NissiBeach2/posx.jpg"),
+		config::resources_path("cubemaps/NissiBeach2/negx.jpg"),
+		config::resources_path("cubemaps/NissiBeach2/posy.jpg"),
+		config::resources_path("cubemaps/NissiBeach2/negy.jpg"),
+		config::resources_path("cubemaps/NissiBeach2/posz.jpg"),
+		config::resources_path("cubemaps/NissiBeach2/negz.jpg"));
+
 	skybox.set_geometry(skybox_shape);
-	skybox.set_program(&fallback_shader, set_uniforms);
+	skybox.add_texture("cubemap", cubemap, GL_TEXTURE_CUBE_MAP);
+	skybox.set_program(&skybox_shader, set_uniforms);
 
 	auto demo_shape = parametric_shapes::createSphere(1.5f, 40u, 40u);
 	if (demo_shape.vao == 0u) {
@@ -123,15 +149,21 @@ edaf80::Assignment3::run()
 	demo_material.shininess = 10.0f;
 
 	Node demo_sphere;
+	
+	GLuint diffuse_texture = bonobo::loadTexture2D(config::resources_path("textures/leather_red_02_coll1_2k.jpg"));
+	demo_sphere.add_texture("diffuse_texture", diffuse_texture, GL_TEXTURE_2D);
+	GLuint specular_texture = bonobo::loadTexture2D(config::resources_path("textures/leather_red_02_rough_2k.jpg"));
+	demo_sphere.add_texture("specular_texture", specular_texture, GL_TEXTURE_2D);
+	GLuint normal_map = bonobo::loadTexture2D(config::resources_path("textures/leather_red_02_nor_2k.jpg"));
+	demo_sphere.add_texture("normal_map", normal_map, GL_TEXTURE_2D);
+
 	demo_sphere.set_geometry(demo_shape);
 	demo_sphere.set_material_constants(demo_material);
-	demo_sphere.set_program(&fallback_shader, phong_set_uniforms);
-
+	demo_sphere.set_program(&phong_shader, phong_set_uniforms);
 
 	glClearDepthf(1.0f);
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-
 
 	auto lastTime = std::chrono::high_resolution_clock::now();
 
