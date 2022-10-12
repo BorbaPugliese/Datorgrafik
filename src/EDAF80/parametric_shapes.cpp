@@ -58,8 +58,8 @@ parametric_shapes::createQuad(float const width, float const height,
 	//create triangle index sets
 	auto index_sets = std::vector<glm::uvec3>();
 
-	for (unsigned int i = 0u; i < vertical_split_count; i++) {
-		for (unsigned int j = 0u; j < horizontal_split_count - 1; j++) {
+	for (unsigned int i = 0u; i < vertical_split_count - 1; i++) {
+		for (unsigned int j = 0u; j < horizontal_split_count - 2; j++) {
 
 			index_sets.push_back(glm::uvec3(
 				(vertical_split_count) * (i + 0u) + (j + 0u),

@@ -43,7 +43,7 @@ edaf80::Assignment4::run()
 	mCamera.mWorld.SetTranslate(glm::vec3(-40.0f, 14.0f, 6.0f));
 	mCamera.mWorld.LookAt(glm::vec3(0.0f));
 	mCamera.mMouseSensitivity = glm::vec2(0.003f);
-	mCamera.mMovementSpeed = glm::vec3(3.0f); // 3 m/s => 10.8 km/h
+	mCamera.mMovementSpeed = glm::vec3(6.0f); // 3 m/s => 10.8 km/h
 	auto camera_position = mCamera.mWorld.GetTranslation();
 
 	// Create the shader programs
@@ -65,7 +65,6 @@ edaf80::Assignment4::run()
 		wave_shader);
 	if (wave_shader == 0u) {
 		LogError("Failed to load wave shader");
-		return;
 	}
 
 	GLuint skybox_shader = 0u;
@@ -77,11 +76,16 @@ edaf80::Assignment4::run()
 		LogError("Failed to load skybox shader");
 
 	auto const light_position = glm::vec3(-2.0f, 4.0f, 2.0f);
-	auto const set_uniforms = [&light_position](GLuint program) {
+	bool use_normal_mapping = false;
+	float elapsed_time_s = 0.0f;
+	auto const set_uniforms = [&use_normal_mapping, &light_position, &camera_position, &elapsed_time_s](GLuint program) {
+		glUniform1i(glGetUniformLocation(program, "use_normal_mapping"), use_normal_mapping ? 1 : 0);
 		glUniform3fv(glGetUniformLocation(program, "light_position"), 1, glm::value_ptr(light_position));
+		glUniform3fv(glGetUniformLocation(program, "camera_position"), 1, glm::value_ptr(camera_position));
+		glUniform1f(glGetUniformLocation(program, "t"), elapsed_time_s);
 	};
 
-	auto skybox_shape = parametric_shapes::createSphere(20.0f, 100u, 100u);
+	auto skybox_shape = parametric_shapes::createSphere(200.0f, 1000u, 1000u);
 	if (skybox_shape.vao == 0u) {
 		LogError("Failed to retrieve the mesh for the skybox");
 		return;
@@ -101,29 +105,27 @@ edaf80::Assignment4::run()
 	skybox.add_texture("cubemap", cubemap, GL_TEXTURE_CUBE_MAP);
 	skybox.set_program(&skybox_shader, set_uniforms);
 
-
+	auto quad = parametric_shapes::createQuad(100.0f, 100.0f, 1000, 1000);
+	Node quadratic;
+	quadratic.add_texture("cubemap", cubemap, GL_TEXTURE_CUBE_MAP);
+	quadratic.set_geometry(quad);
 
 	//
 	// Todo: Insert the creation of other shader programs.
 	//       (Check how it was done in assignment 3.)
 	//
 
-	float elapsed_time_s = 0.0f;
-
 	//
 	// Todo: Load your geometry
 	//
-
-	auto quad = parametric_shapes::createQuad(100.0f, 100.0f, 1000, 1000);
 
 	glClearDepthf(1.0f);
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 
-
 	auto lastTime = std::chrono::high_resolution_clock::now();
 
-	bool pause_animation = true;
+	bool pause_animation = false;
 	bool use_orbit_camera = false;
 	auto cull_mode = bonobo::cull_mode_t::disabled;
 	auto polygon_mode = bonobo::polygon_mode_t::fill;
@@ -150,6 +152,7 @@ edaf80::Assignment4::run()
 		glfwPollEvents();
 		inputHandler.Advance();
 		mCamera.Update(deltaTimeUs, inputHandler);
+
 		if (use_orbit_camera) {
 			mCamera.mWorld.LookAt(glm::vec3(0.0f));
 		}
@@ -186,31 +189,25 @@ edaf80::Assignment4::run()
 		// Todo: If you need to handle inputs, you can do it here
 		//
 
-
 		mWindowManager.NewImGuiFrame();
 
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		bonobo::changePolygonMode(polygon_mode);
 
-
 		if (!shader_reload_failed) {
 			//
 			// Todo: Render all your geometry here.
 			//
-
+			
 			//Rendering the quad
-			auto quadratic = Node();
-			quadratic.set_geometry(quad);
-			quadratic.set_program(&fallback_shader, set_uniforms);
-			TRSTransformf& circle_rings_transform_ref = quadratic.get_transform();
+
+			//TRSTransformf& circle_rings_transform_ref = quadratic.get_transform();
+			skybox.render(mCamera.GetWorldToClipMatrix());
 			quadratic.render(mCamera.GetWorldToClipMatrix());
+			quadratic.set_program(&wave_shader, set_uniforms);
 
 			//Updating the elapsed time
-			elapsed_time_s += std::chrono::duration<float>(deltaTimeUs).count();
-			GLuint program;
-			glUniform1f(glGetUniformLocation(wave_shader, "t"), elapsed_time_s);
 		}
-
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -218,7 +215,6 @@ edaf80::Assignment4::run()
 		// Todo: If you want a custom ImGUI window, you can set it up
 		//       here
 		//
-
 
 		bool opened = ImGui::Begin("Scene Control", nullptr, ImGuiWindowFlags_None);
 		if (opened) {

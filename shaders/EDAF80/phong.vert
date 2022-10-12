@@ -29,7 +29,6 @@ void main()
 	 vec3 N = normalize(normal);
 	 vs_out.TBN = mat3(T,B,N);
 
-
 	 vec3 worldPos = (vertex_model_to_world*vec4(vertex,1)).xyz;
 	 vs_out.fN = (normal_model_to_world*vec4(normal,0.0)).xyz;
 	 vs_out.TexCoord = texcoord.xy;
