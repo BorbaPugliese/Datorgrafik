@@ -109,6 +109,8 @@ edaf80::Assignment4::run()
 	Node quadratic;
 	quadratic.add_texture("cubemap", cubemap, GL_TEXTURE_CUBE_MAP);
 	quadratic.set_geometry(quad);
+	GLuint normal_map = bonobo::loadTexture2D(config::resources_path("textures/waves.png"));
+	quadratic.add_texture("normal_map", normal_map, GL_TEXTURE_2D);
 
 	//
 	// Todo: Insert the creation of other shader programs.
