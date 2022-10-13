@@ -1,7 +1,7 @@
 #version 410
 
 layout (location = 0) in vec3 vertex;
-layout (location = 1) in vec3 texcoord;
+layout (location = 2) in vec3 texcoord;
 
 uniform mat4 vertex_model_to_world;
 uniform mat4 normal_model_to_world;
@@ -29,6 +29,7 @@ out VS_OUT {
 	vec2 normalCoord0;
 	vec2 normalCoord1;
 	vec2 normalCoord2;
+	vec3 textcoords;
 
 } vs_out;
 
@@ -57,6 +58,8 @@ void main()
 	float phase2 = 1.3f;
 	float sharpness2 = 2.0f;
 	float time = t;
+
+	vs_out.textcoords = texcoord;
 
 	vs_out.wave1 = wave(vertex.xz, vec2(-1.0, 0.0), amplitude1, frequency1, phase1, sharpness1, time);
 	vs_out.wave2 = wave(vertex.xz, vec2(-0.7, 0.7), amplitude2, frequency2, phase2, sharpness2, time);
@@ -87,5 +90,5 @@ void main()
 	normalCoord1.xy = texcoord.xy * texScale * 2 + normalTime * normalSpeed * 4;
 	normalCoord2.xy = texcoord.xy * texScale * 4 + normalTime * normalSpeed * 8;
 
-	gl_Position = vertex_world_to_clip * vertex_model_to_world * vec4(vs_out.vertex, 1.0);
+	gl_Position = vertex_world_to_clip * vec4(vs_out.vertex, 1.0);
 }

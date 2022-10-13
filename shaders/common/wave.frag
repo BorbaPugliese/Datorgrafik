@@ -3,6 +3,10 @@
 uniform samplerCube cubemap;
 uniform sampler2D normal_map;
 
+uniform mat4 vertex_model_to_world;
+uniform mat4 normal_model_to_world;
+uniform mat4 vertex_world_to_clip;
+
 in VS_OUT {
     vec3 vertex;
     vec3 displaced_vertex;
@@ -20,6 +24,7 @@ in VS_OUT {
 	vec2 normalCoord0;
 	vec2 normalCoord1;
 	vec2 normalCoord2;
+	vec3 textcoords;
 
 } fs_in;
 
@@ -42,26 +47,26 @@ void main()
 	//n = normalize(n);
 
 	//Normal mapping
-    vec3 T = normalize(vec3(1,dH_dx,0));
-	vec3 B = normalize(vec3(1,dH_dz,0));
-	vec3 N = normalize(vec3(-dH_dx,1,-dH_dz));
+    vec4 T = vertex_model_to_world * vec4(normalize(vec3(1,dH_dx,0)),0);
+	vec4 B = vertex_model_to_world * vec4(normalize(vec3(0,dH_dz,1)),0);
+	vec4 N = normal_model_to_world * vec4(normalize(vec3(-dH_dx,1,-dH_dz)),0);
 
 	mat3 TBN = mat3(T,B,N);
 
-	float facing = 1 - max(dot(V, N), 0);
+	float facing = 1 - max(dot(V, N.xyz), 0);
 
-	vec3 n0 = (texture(normal_map, fs_in.normalCoord0)*2-1).xyz;
-	vec3 n1 = (texture(normal_map, fs_in.normalCoord1)*2-1).xyz;
-	vec3 n2 = (texture(normal_map, fs_in.normalCoord2)*2-1).xyz;
-
-	vec3 n_bump = normalize(n0+n1+n2);
+	vec4 n0 = vertex_model_to_world*(texture(normal_map, fs_in.normalCoord0)*2-1);
+	vec4 n1 = vertex_model_to_world*(texture(normal_map, fs_in.normalCoord1)*2-1);
+	vec4 n2 = vertex_model_to_world*(texture(normal_map, fs_in.normalCoord2)*2-1);
+	
+	vec4 n_bump = normalize(n0+n1+n2);
 
 	//n = texture(normal_map, fs_in.TexCoord).rgb;
 	//n = n * 2.0 - 1.0;
 	//n = normalize(fs_in.TBN * n);
 
-    vec3 R = reflect(-V, TBN*n_bump);
+    vec3 R = reflect(-V, TBN*n_bump.xyz);
 
-	color_water = mix(color_deep, color_shallow, facing) + texture(cubemap, R);
+	color_water = n_bump;//mix(color_deep, color_shallow, facing) + texture(cubemap, R);
 
 }
