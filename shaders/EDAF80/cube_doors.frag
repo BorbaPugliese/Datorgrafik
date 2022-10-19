@@ -11,5 +11,5 @@ out vec4 frag_color;
 
 void main()
 {
-    frag_color = texture(cubemap, fs_in.vertex)*fs_in.flicker;
+    frag_color = texture(cubemap, fs_in.vertex);//*fs_in.flicker;
 }

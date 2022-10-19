@@ -43,7 +43,7 @@ edaf80::Assignment5::run()
 	mCamera.mWorld.SetTranslate(glm::vec3(0.0f, 0.0f, 6.0f));
 	mCamera.mWorld.LookAt(glm::vec3(0.0f));
 	mCamera.mMouseSensitivity = glm::vec2(0.003f);
-	mCamera.mMovementSpeed = glm::vec3(3.0f); // 3 m/s => 10.8 km/h
+	mCamera.mMovementSpeed = glm::vec3(10.0f); // 3 m/s => 10.8 km/h
 	auto camera_position = mCamera.mWorld.GetTranslation();
 
 	// Create the shader programs
@@ -65,6 +65,14 @@ edaf80::Assignment5::run()
 		skybox_shader);
 	if (skybox_shader == 0u)
 		LogError("Failed to load skybox shader");
+
+	GLuint enemy_shader = 0u;
+	program_manager.CreateAndRegisterProgram("Enemy",
+		{ { ShaderType::vertex, "EDAF80/enemy.vert" },
+		  { ShaderType::fragment, "EDAF80/enemy.frag" } },
+		enemy_shader);
+	if (enemy_shader == 0u)
+		LogError("Failed to load enemy shader");
 
 	auto const light_position = glm::vec3(-2.0f, 4.0f, 2.0f);
 	bool use_normal_mapping = false;
@@ -95,6 +103,11 @@ edaf80::Assignment5::run()
 	skybox.set_geometry(skybox_shape);
 	skybox.add_texture("cubemap", cubemap, GL_TEXTURE_CUBE_MAP);
 
+	auto enemy_shape = bonobo::loadObjects(config::resources_path("scenes/Enemy_Alien.obj"));
+	Node Enemy;
+	Enemy.set_geometry(enemy_shape[0]);
+	GLuint enemy_texture = bonobo::loadTexture2D(config::resources_path("textures/T_SEEKER_ORM_JPG.jpg"));
+	Enemy.add_texture("enemy_tex", enemy_texture, GL_TEXTURE_2D);
 
 
 
@@ -176,10 +189,16 @@ edaf80::Assignment5::run()
 			//
 			// Todo: Render all your geometry here.
 			//
+			Enemy.render(mCamera.GetWorldToClipMatrix());
+			Enemy.set_program(&enemy_shader, set_uniforms);
+
 			skybox.render(mCamera.GetWorldToClipMatrix());
 			skybox.set_program(&skybox_shader, set_uniforms);
+			
+			Enemy.get_transform().SetTranslate(glm::vec3(200,0,0));
 
-			std::cout << elapsed_time_s << std::endl;
+			//Enemy.render(mCamera.GetWorldToClipMatrix());
+			//Enemy.set_program(&enemy_shader, set_uniforms);
 
 		}
 
