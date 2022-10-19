@@ -55,18 +55,29 @@ void main()
 
 	float facing = 1 - max(dot(V, N.xyz), 0);
 
-	vec4 n0 = vertex_model_to_world*(texture(normal_map, fs_in.normalCoord0)*2-1);
-	vec4 n1 = vertex_model_to_world*(texture(normal_map, fs_in.normalCoord1)*2-1);
-	vec4 n2 = vertex_model_to_world*(texture(normal_map, fs_in.normalCoord2)*2-1);
+	vec4 n0 = texture(normal_map, fs_in.normalCoord0)*2-1;
+	vec4 n1 = texture(normal_map, fs_in.normalCoord1)*2-1;
+	vec4 n2 = texture(normal_map, fs_in.normalCoord2)*2-1;
 	
 	vec4 n_bump = normalize(n0+n1+n2);
 
-	//n = texture(normal_map, fs_in.TexCoord).rgb;
-	//n = n * 2.0 - 1.0;
-	//n = normalize(fs_in.TBN * n);
+	//Fresnel
+	float R0 = 0.02037; //Air to Water
+	float d = dot(V, n_bump.xyz);
+	float fresnel = clamp(R0 + (1.0 - R0) * pow(1.0 - facing, 5.0), 0, 1); // float fresnel = R0 + (1.0 - R0) * pow(1.0 - d, 5.0);
 
-    vec3 R = reflect(-V, TBN*n_bump.xyz);
+    //Refraction
+	float eta = 1.33f/1.0f;
+	vec3 refraction = refract(V, n_bump.xyz, eta);
 
-	color_water = n_bump;//mix(color_deep, color_shallow, facing) + texture(cubemap, R);
+    vec3 Reflect = reflect(-V, TBN*n_bump.xyz);
 
+	color_water = mix(color_deep, color_shallow, facing) + texture(cubemap, Reflect) * fresnel + texture(cubemap, refraction) * (1 - fresnel);
+	//if (1.0 - d > 1) {
+	//color_water = T;
+	//};
+
+
+
+	//color_water = texture(normal_map, fs_in.textcoords.xy);
 }

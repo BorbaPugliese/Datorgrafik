@@ -15,7 +15,7 @@ uniform float t;
 out VS_OUT {
 	vec3 vertex;
 	vec3 displaced_vertex;
-	vec2 TexCoord;
+	vec3 textcoords;
 	float wave1;
 	float wave2;
 	float dG_dx1;
@@ -29,7 +29,6 @@ out VS_OUT {
 	vec2 normalCoord0;
 	vec2 normalCoord1;
 	vec2 normalCoord2;
-	vec3 textcoords;
 
 } vs_out;
 

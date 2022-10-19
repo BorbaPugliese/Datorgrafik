@@ -1,11 +1,14 @@
 #include "assignment5.hpp"
+#include "parametric_shapes.hpp"
 
 #include "config.hpp"
 #include "core/Bonobo.h"
 #include "core/FPSCamera.h"
 #include "core/helpers.hpp"
+#include "core/node.hpp"
 #include "core/ShaderProgramManager.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 #include <tinyfiledialogs.h>
 
@@ -38,8 +41,10 @@ edaf80::Assignment5::run()
 {
 	// Set up the camera
 	mCamera.mWorld.SetTranslate(glm::vec3(0.0f, 0.0f, 6.0f));
+	mCamera.mWorld.LookAt(glm::vec3(0.0f));
 	mCamera.mMouseSensitivity = glm::vec2(0.003f);
 	mCamera.mMovementSpeed = glm::vec3(3.0f); // 3 m/s => 10.8 km/h
+	auto camera_position = mCamera.mWorld.GetTranslation();
 
 	// Create the shader programs
 	ShaderProgramManager program_manager;
@@ -53,10 +58,50 @@ edaf80::Assignment5::run()
 		return;
 	}
 
+	GLuint skybox_shader = 0u;
+	program_manager.CreateAndRegisterProgram("Skybox",
+		{ { ShaderType::vertex, "EDAF80/cube_doors.vert" },
+		  { ShaderType::fragment, "EDAF80/cube_doors.frag" } },
+		skybox_shader);
+	if (skybox_shader == 0u)
+		LogError("Failed to load skybox shader");
+
+	auto const light_position = glm::vec3(-2.0f, 4.0f, 2.0f);
+	bool use_normal_mapping = false;
+	float elapsed_time_s = 0.0f;
+	auto const set_uniforms = [&use_normal_mapping, &light_position, &camera_position, &elapsed_time_s](GLuint program) {
+		glUniform1i(glGetUniformLocation(program, "use_normal_mapping"), use_normal_mapping ? 1 : 0);
+		glUniform3fv(glGetUniformLocation(program, "light_position"), 1, glm::value_ptr(light_position));
+		glUniform3fv(glGetUniformLocation(program, "camera_position"), 1, glm::value_ptr(camera_position));
+		glUniform1f(glGetUniformLocation(program, "t"), elapsed_time_s);
+	};
+
+	auto skybox_shape = parametric_shapes::createSphere(200.0f, 1000u, 1000u);
+	if (skybox_shape.vao == 0u) {
+		LogError("Failed to retrieve the mesh for the skybox");
+		return;
+	}
+
+	Node skybox;
+
+	GLuint cubemap = bonobo::loadTextureCubeMap(
+		config::resources_path("cubemaps/Door/Spawn_door.jpg"),
+		config::resources_path("cubemaps/Door/Spawn_door.jpg"),
+		config::resources_path("cubemaps/Door/Spawn_door.jpg"),
+		config::resources_path("cubemaps/Door/Spawn_door.jpg"),
+		config::resources_path("cubemaps/Door/Spawn_door.jpg"),
+		config::resources_path("cubemaps/Door/Spawn_door.jpg"));
+
+	skybox.set_geometry(skybox_shape);
+	skybox.add_texture("cubemap", cubemap, GL_TEXTURE_CUBE_MAP);
+
+
+
+
 	//
 	// Todo: Insert the creation of other shader programs.
 	//       (Check how it was done in assignment 3.)
-	//
+	
 
 	//
 	// Todo: Load your geometry
@@ -80,13 +125,14 @@ edaf80::Assignment5::run()
 		auto const nowTime = std::chrono::high_resolution_clock::now();
 		auto const deltaTimeUs = std::chrono::duration_cast<std::chrono::microseconds>(nowTime - lastTime);
 		lastTime = nowTime;
-
+		elapsed_time_s += std::chrono::duration<float>(deltaTimeUs).count();
 		auto& io = ImGui::GetIO();
 		inputHandler.SetUICapture(io.WantCaptureMouse, io.WantCaptureKeyboard);
 
 		glfwPollEvents();
 		inputHandler.Advance();
 		mCamera.Update(deltaTimeUs, inputHandler);
+		camera_position = mCamera.mWorld.GetTranslation();
 
 		if (inputHandler.GetKeycodeState(GLFW_KEY_R) & JUST_PRESSED) {
 			shader_reload_failed = !program_manager.ReloadAllPrograms();
@@ -130,6 +176,11 @@ edaf80::Assignment5::run()
 			//
 			// Todo: Render all your geometry here.
 			//
+			skybox.render(mCamera.GetWorldToClipMatrix());
+			skybox.set_program(&skybox_shader, set_uniforms);
+
+			std::cout << elapsed_time_s << std::endl;
+
 		}
 
 
