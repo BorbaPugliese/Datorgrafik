@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['orbitconfiguration_558',['OrbitConfiguration',['../structOrbitConfiguration.html',1,'']]]
+  ['node_565',['Node',['../classNode.html',1,'']]]
 ];

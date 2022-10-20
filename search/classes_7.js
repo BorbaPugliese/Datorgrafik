@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['material_5fdata_555',['material_data',['../structbonobo_1_1material__data.html',1,'bonobo']]],
-  ['mesh_5fdata_556',['mesh_data',['../structbonobo_1_1mesh__data.html',1,'bonobo']]]
+  ['logsettings_560',['LogSettings',['../structLog_1_1LogSettings.html',1,'Log']]],
+  ['logviewwrapper_561',['LogViewWrapper',['../structBonobo_1_1LogViewWrapper.html',1,'Bonobo']]],
+  ['logwrapper_562',['LogWrapper',['../structBonobo_1_1LogWrapper.html',1,'Bonobo']]]
 ];
