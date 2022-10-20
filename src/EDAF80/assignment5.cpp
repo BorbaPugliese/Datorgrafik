@@ -134,6 +134,41 @@ edaf80::Assignment5::run()
 	float basis_thickness_scale = 1.0f;
 	float basis_length_scale = 1.0f;
 
+	int collision(glm::vec3 u, glm::vec3 v) {
+		return = u - v * (dot(u, v));
+	}
+
+	int points = 0;
+	int r = 20; //Need to calculate 
+
+	//CTRL+K+U uncomment
+	//enum State {
+	//	NEW_GAME, PLAY_GAME, END_GAME,
+	//};
+	//State current_state = NEW_GAME;
+
+	//switch (current_state) {
+	//case NEW_GAME:
+	//	// Do first time setup of variables here
+	//	// Prepare for a new round
+	//		current_state = PLAY_GAME;
+	//	break
+	//		;
+	//case PLAY_GAME:
+	//	// Game logic here
+	//	// Control input, physics update, render
+	//		if (player_dead) {
+	//			current_state = END_GAME;
+	//		}
+	//	break
+	//		;
+	//case END_GAME:
+	//	// Deal with showing high - scores
+	//		// Ask if the player wants to restart
+	//		if (restart) {
+	//			current_state = NEW_GAME;
+	//		}
+
 	while (!glfwWindowShouldClose(window)) {
 		auto const nowTime = std::chrono::high_resolution_clock::now();
 		auto const deltaTimeUs = std::chrono::duration_cast<std::chrono::microseconds>(nowTime - lastTime);
@@ -184,7 +219,6 @@ edaf80::Assignment5::run()
 
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-
 		if (!shader_reload_failed) {
 			//
 			// Todo: Render all your geometry here.
@@ -202,7 +236,28 @@ edaf80::Assignment5::run()
 
 		}
 
+		//To initialize the array of enemies
+		auto array_of_enemies = std::vector<glm::vec3>();
 
+		if (click_shooting){
+
+		auto pv = mCamera.mWorld.GetTranslation();
+		auto v = mCamera.mWorld.GetFront();
+
+		for (int i = 0; i < sizeof(array_of_enemies); i++) {
+
+			glm::vec3 ps = array_of_enemies[i]; //get the position of the enemy
+
+			//If hits the enemy
+			if (abs(collision(ps - pv, v) < r)) {
+				//Remove the enemy and gain points
+				int enemy = 1; // Here we call the function to remove the enemy
+				points = points + 1; //Idn why is not initialized 
+			}
+
+		}
+
+		}
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		//

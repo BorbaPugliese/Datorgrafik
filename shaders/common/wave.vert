@@ -81,13 +81,9 @@ void main()
 	float normalTime = mod(time, 100.0);
 	vec2 normalSpeed = vec2(-0.05, 0.0);
 
-	vec2 normalCoord0;
-	vec2 normalCoord1;
-	vec2 normalCoord2;
-
-	normalCoord0.xy = texcoord.xy * texScale + normalTime * normalSpeed;
-	normalCoord1.xy = texcoord.xy * texScale * 2 + normalTime * normalSpeed * 4;
-	normalCoord2.xy = texcoord.xy * texScale * 4 + normalTime * normalSpeed * 8;
+	vs_out.normalCoord0.xy = texcoord.xy * texScale + normalTime * normalSpeed;
+	vs_out.normalCoord1.xy = texcoord.xy * texScale * 2 + normalTime * normalSpeed * 4;
+	vs_out.normalCoord2.xy = texcoord.xy * texScale * 4 + normalTime * normalSpeed * 8;
 
 	gl_Position = vertex_world_to_clip * vec4(vs_out.vertex, 1.0);
 }

@@ -8,23 +8,22 @@ uniform mat4 normal_model_to_world;
 uniform mat4 vertex_world_to_clip;
 
 in VS_OUT {
-    vec3 vertex;
-    vec3 displaced_vertex;
-    vec2 TexCoord;
-    float wave1;
-    float wave2;
-    float dG_dx1;
-    float dG_dx2;
-    float dG_dz1;
-    float dG_dz2;
+	vec3 vertex;
+	vec3 displaced_vertex;
+	vec3 textcoords;
+	float wave1;
+	float wave2;
+	float dG_dx1;
+	float dG_dx2;
+	float dG_dz1;
+	float dG_dz2;
 	//For the vertex
-    vec3 fN;
-    vec3 fV;
-    vec3 fL;
+	vec3 fN; 
+	vec3 fV;
+	vec3 fL;
 	vec2 normalCoord0;
 	vec2 normalCoord1;
 	vec2 normalCoord2;
-	vec3 textcoords;
 
 } fs_in;
 
@@ -60,24 +59,24 @@ void main()
 	vec4 n2 = texture(normal_map, fs_in.normalCoord2)*2-1;
 	
 	vec4 n_bump = normalize(n0+n1+n2);
+	n_bump = vec4(n_bump.x, n_bump.z, n_bump.y, n_bump.w);
 
 	//Fresnel
 	float R0 = 0.02037; //Air to Water
 	float d = dot(V, n_bump.xyz);
-	float fresnel = clamp(R0 + (1.0 - R0) * pow(1.0 - facing, 5.0), 0, 1); // float fresnel = R0 + (1.0 - R0) * pow(1.0 - d, 5.0);
+	float fresnel = R0 + (1.0 - R0) * pow(1.0 - d, 5.0); // float fresnel = R0 + (1.0 - R0) * pow(1.0 - d, 5.0);
 
     //Refraction
-	float eta = 1.33f/1.0f;
-	vec3 refraction = refract(V, n_bump.xyz, eta);
+	float eta = 1.0f/1.33f;
+	vec3 refraction = refract(-V, TBN*n_bump.xyz, eta);
 
-    vec3 Reflect = reflect(-V, TBN*n_bump.xyz);
+	
+    vec3 reflection = reflect(V*mat3(-1,0,0,0,1,0,0,0,-1), TBN*n_bump.xyz);
 
-	color_water = mix(color_deep, color_shallow, facing) + texture(cubemap, Reflect) * fresnel + texture(cubemap, refraction) * (1 - fresnel);
+	color_water = mix(color_deep, color_shallow, facing) + texture(cubemap, reflection) * fresnel + texture(cubemap, refraction) * (1 - fresnel);
 	//if (1.0 - d > 1) {
-	//color_water = T;
+	//color_water = vec4(fresnel,0,0,0);
 	//};
-
-
 
 	//color_water = texture(normal_map, fs_in.textcoords.xy);
 }
