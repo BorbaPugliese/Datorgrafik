@@ -73,50 +73,59 @@ $(function() {
 <a href="Enemy_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &lt;glm/mat3x3.hpp&gt;</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;config.hpp&quot;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Bonobo_8h.html">core/Bonobo.h</a>&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="helpers_8hpp.html">core/helpers.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="node_8hpp.html">core/node.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="ShaderProgramManager_8hpp.html">core/ShaderProgramManager.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="classEnemy.html">   11</a></span>&#160;<span class="keyword">class </span><a class="code" href="classEnemy.html">Enemy</a></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="comment">//default constructor for an enemy</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="comment">// add any parameters you need here</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <a class="code" href="classEnemy.html#a181e9b24966dcfb114fb29a6bab4a986">Enemy</a>(glm::vec3 starting_pos);</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="comment">// move enemy to passed vector</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classEnemy.html#ab1be393cac4d37ea38f2e4e7f11bc8f6">moveTo</a>(glm::vec3 destination);</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;stack&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;config.hpp&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Bonobo_8h.html">core/Bonobo.h</a>&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="helpers_8hpp.html">core/helpers.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="node_8hpp.html">core/node.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="ShaderProgramManager_8hpp.html">core/ShaderProgramManager.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classEnemy.html">   12</a></span>&#160;<span class="keyword">class </span><a class="code" href="classEnemy.html">Enemy</a></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;{</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="classEnemy.html#a3964e9796e01f5932eee35238383e18a">   16</a></span>&#160;    <span class="keyword">static</span> std::stack&lt;Enemy*&gt;* <a class="code" href="classEnemy.html#a3964e9796e01f5932eee35238383e18a">deadStack</a>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="comment">//default constructor for an enemy</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="comment">// add any parameters you need here</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="classEnemy.html#a181e9b24966dcfb114fb29a6bab4a986">Enemy</a>(glm::vec3 starting_pos);</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="comment">// uses LERP to update the position of the enemy</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classEnemy.html#aa21643cc8e5abeb1736058d7f456d6ff">moveTowardPlayer</a>(glm::vec3 playerPos);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="comment">// move enemy to passed vector</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classEnemy.html#ab1be393cac4d37ea38f2e4e7f11bc8f6">moveTo</a>(glm::vec3 destination);</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="comment">// put whatever rendering stuff you need in here</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classEnemy.html#ae9931199831697f4bfb1e88d4410ca07">render</a>(glm::mat4 <span class="keyword">const</span>&amp; view_projection, GLuint <span class="keyword">const</span>* <span class="keyword">const</span> program, std::function&lt;<span class="keywordtype">void</span>(GLuint)&gt; <span class="keyword">const</span>&amp; set_uniforms);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="comment">// uses LERP to update the position of the enemy</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classEnemy.html#aa21643cc8e5abeb1736058d7f456d6ff">moveTowardPlayer</a>(glm::vec3 playerPos);</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="classEnemy.html#a2cc5d04c233b2eb1a6eb5017f78d4571">   29</a></span>&#160;    <a class="code" href="classNode.html">Node</a> <a class="code" href="classEnemy.html#a2cc5d04c233b2eb1a6eb5017f78d4571">node</a>;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classEnemy.html#a09acafce8f7c033ac644566cfd2ec2a7">   31</a></span>&#160;    glm::vec3 <a class="code" href="classEnemy.html#a09acafce8f7c033ac644566cfd2ec2a7">position</a>;</div>
-<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classEnemy.html#aabb30890aaf0b6bdc1922688a90b2cd1">   32</a></span>&#160;    glm::vec3 <a class="code" href="classEnemy.html#aabb30890aaf0b6bdc1922688a90b2cd1">facing</a>;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="comment">// put whatever rendering stuff you need in here</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classEnemy.html#ae9931199831697f4bfb1e88d4410ca07">render</a>(glm::mat4 <span class="keyword">const</span>&amp; view_projection, GLuint <span class="keyword">const</span>* <span class="keyword">const</span> program, std::function&lt;<span class="keywordtype">void</span>(GLuint)&gt; <span class="keyword">const</span>&amp; set_uniforms);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classEnemy.html#a7b65c2ba5af4f2238c4eb385ff1cf5ee">shooting</a>(<span class="keywordtype">int</span> &amp;points, glm::vec3 pv, glm::vec3 v);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classEnemy.html#ac71ea51a07298940e42b533fbb52d8a9">Enemy::playerAlive</a>(glm::vec3 v);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="classEnemy.html#a2cc5d04c233b2eb1a6eb5017f78d4571">   35</a></span>&#160;    <a class="code" href="classNode.html">Node</a> <a class="code" href="classEnemy.html#a2cc5d04c233b2eb1a6eb5017f78d4571">node</a>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classEnemy.html#a09acafce8f7c033ac644566cfd2ec2a7">   37</a></span>&#160;    glm::vec3 <a class="code" href="classEnemy.html#a09acafce8f7c033ac644566cfd2ec2a7">position</a>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classEnemy.html#aabb30890aaf0b6bdc1922688a90b2cd1">   38</a></span>&#160;    glm::vec3 <a class="code" href="classEnemy.html#aabb30890aaf0b6bdc1922688a90b2cd1">facing</a>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;};</div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aShaderProgramManager_8hpp_html"><div class="ttname"><a href="ShaderProgramManager_8hpp.html">ShaderProgramManager.hpp</a></div></div>
 <div class="ttc" id="anode_8hpp_html"><div class="ttname"><a href="node_8hpp.html">node.hpp</a></div></div>
 <div class="ttc" id="ahelpers_8hpp_html"><div class="ttname"><a href="helpers_8hpp.html">helpers.hpp</a></div></div>
-<div class="ttc" id="aclassEnemy_html_ab1be393cac4d37ea38f2e4e7f11bc8f6"><div class="ttname"><a href="classEnemy.html#ab1be393cac4d37ea38f2e4e7f11bc8f6">Enemy::moveTo</a></div><div class="ttdeci">void moveTo(glm::vec3 destination)</div><div class="ttdef"><b>Definition:</b> Enemy.cpp:20</div></div>
-<div class="ttc" id="aclassEnemy_html_aabb30890aaf0b6bdc1922688a90b2cd1"><div class="ttname"><a href="classEnemy.html#aabb30890aaf0b6bdc1922688a90b2cd1">Enemy::facing</a></div><div class="ttdeci">glm::vec3 facing</div><div class="ttdef"><b>Definition:</b> Enemy.hpp:32</div></div>
-<div class="ttc" id="aclassEnemy_html_aa21643cc8e5abeb1736058d7f456d6ff"><div class="ttname"><a href="classEnemy.html#aa21643cc8e5abeb1736058d7f456d6ff">Enemy::moveTowardPlayer</a></div><div class="ttdeci">void moveTowardPlayer(glm::vec3 playerPos)</div><div class="ttdef"><b>Definition:</b> Enemy.cpp:25</div></div>
-<div class="ttc" id="aclassEnemy_html_a2cc5d04c233b2eb1a6eb5017f78d4571"><div class="ttname"><a href="classEnemy.html#a2cc5d04c233b2eb1a6eb5017f78d4571">Enemy::node</a></div><div class="ttdeci">Node node</div><div class="ttdef"><b>Definition:</b> Enemy.hpp:29</div></div>
-<div class="ttc" id="aclassEnemy_html_a09acafce8f7c033ac644566cfd2ec2a7"><div class="ttname"><a href="classEnemy.html#a09acafce8f7c033ac644566cfd2ec2a7">Enemy::position</a></div><div class="ttdeci">glm::vec3 position</div><div class="ttdef"><b>Definition:</b> Enemy.hpp:31</div></div>
-<div class="ttc" id="aclassEnemy_html"><div class="ttname"><a href="classEnemy.html">Enemy</a></div><div class="ttdef"><b>Definition:</b> Enemy.hpp:11</div></div>
+<div class="ttc" id="aclassEnemy_html_ab1be393cac4d37ea38f2e4e7f11bc8f6"><div class="ttname"><a href="classEnemy.html#ab1be393cac4d37ea38f2e4e7f11bc8f6">Enemy::moveTo</a></div><div class="ttdeci">void moveTo(glm::vec3 destination)</div><div class="ttdef"><b>Definition:</b> Enemy.cpp:22</div></div>
+<div class="ttc" id="aclassEnemy_html_aabb30890aaf0b6bdc1922688a90b2cd1"><div class="ttname"><a href="classEnemy.html#aabb30890aaf0b6bdc1922688a90b2cd1">Enemy::facing</a></div><div class="ttdeci">glm::vec3 facing</div><div class="ttdef"><b>Definition:</b> Enemy.hpp:38</div></div>
+<div class="ttc" id="aclassEnemy_html_a3964e9796e01f5932eee35238383e18a"><div class="ttname"><a href="classEnemy.html#a3964e9796e01f5932eee35238383e18a">Enemy::deadStack</a></div><div class="ttdeci">static std::stack&lt; Enemy * &gt; * deadStack</div><div class="ttdef"><b>Definition:</b> Enemy.hpp:16</div></div>
+<div class="ttc" id="aclassEnemy_html_aa21643cc8e5abeb1736058d7f456d6ff"><div class="ttname"><a href="classEnemy.html#aa21643cc8e5abeb1736058d7f456d6ff">Enemy::moveTowardPlayer</a></div><div class="ttdeci">void moveTowardPlayer(glm::vec3 playerPos)</div><div class="ttdef"><b>Definition:</b> Enemy.cpp:27</div></div>
+<div class="ttc" id="aclassEnemy_html_a2cc5d04c233b2eb1a6eb5017f78d4571"><div class="ttname"><a href="classEnemy.html#a2cc5d04c233b2eb1a6eb5017f78d4571">Enemy::node</a></div><div class="ttdeci">Node node</div><div class="ttdef"><b>Definition:</b> Enemy.hpp:35</div></div>
+<div class="ttc" id="aclassEnemy_html_a09acafce8f7c033ac644566cfd2ec2a7"><div class="ttname"><a href="classEnemy.html#a09acafce8f7c033ac644566cfd2ec2a7">Enemy::position</a></div><div class="ttdeci">glm::vec3 position</div><div class="ttdef"><b>Definition:</b> Enemy.hpp:37</div></div>
+<div class="ttc" id="aclassEnemy_html"><div class="ttname"><a href="classEnemy.html">Enemy</a></div><div class="ttdef"><b>Definition:</b> Enemy.hpp:12</div></div>
 <div class="ttc" id="aclassEnemy_html_a181e9b24966dcfb114fb29a6bab4a986"><div class="ttname"><a href="classEnemy.html#a181e9b24966dcfb114fb29a6bab4a986">Enemy::Enemy</a></div><div class="ttdeci">Enemy(glm::vec3 starting_pos)</div><div class="ttdef"><b>Definition:</b> Enemy.cpp:10</div></div>
+<div class="ttc" id="aclassEnemy_html_ac71ea51a07298940e42b533fbb52d8a9"><div class="ttname"><a href="classEnemy.html#ac71ea51a07298940e42b533fbb52d8a9">Enemy::playerAlive</a></div><div class="ttdeci">bool playerAlive(glm::vec3 v)</div><div class="ttdef"><b>Definition:</b> Enemy.cpp:78</div></div>
 <div class="ttc" id="aBonobo_8h_html"><div class="ttname"><a href="Bonobo_8h.html">Bonobo.h</a></div></div>
 <div class="ttc" id="aclassNode_html"><div class="ttname"><a href="classNode.html">Node</a></div><div class="ttdoc">Represents a node of a scene graph.</div><div class="ttdef"><b>Definition:</b> node.hpp:16</div></div>
-<div class="ttc" id="aclassEnemy_html_ae9931199831697f4bfb1e88d4410ca07"><div class="ttname"><a href="classEnemy.html#ae9931199831697f4bfb1e88d4410ca07">Enemy::render</a></div><div class="ttdeci">void render(glm::mat4 const &amp;view_projection, GLuint const *const program, std::function&lt; void(GLuint)&gt; const &amp;set_uniforms)</div><div class="ttdef"><b>Definition:</b> Enemy.cpp:34</div></div>
+<div class="ttc" id="aclassEnemy_html_a7b65c2ba5af4f2238c4eb385ff1cf5ee"><div class="ttname"><a href="classEnemy.html#a7b65c2ba5af4f2238c4eb385ff1cf5ee">Enemy::shooting</a></div><div class="ttdeci">void shooting(int &amp;points, glm::vec3 pv, glm::vec3 v)</div><div class="ttdef"><b>Definition:</b> Enemy.cpp:51</div></div>
+<div class="ttc" id="aclassEnemy_html_ae9931199831697f4bfb1e88d4410ca07"><div class="ttname"><a href="classEnemy.html#ae9931199831697f4bfb1e88d4410ca07">Enemy::render</a></div><div class="ttdeci">void render(glm::mat4 const &amp;view_projection, GLuint const *const program, std::function&lt; void(GLuint)&gt; const &amp;set_uniforms)</div><div class="ttdef"><b>Definition:</b> Enemy.cpp:43</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

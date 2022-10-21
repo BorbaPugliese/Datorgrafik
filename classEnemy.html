@@ -64,6 +64,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classEnemy-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -83,6 +84,15 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa21643cc8e5abeb1736058d7f456d6ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9931199831697f4bfb1e88d4410ca07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnemy.html#ae9931199831697f4bfb1e88d4410ca07">render</a> (glm::mat4 const &amp;view_projection, GLuint const *const program, std::function&lt; void(GLuint)&gt; const &amp;set_uniforms)</td></tr>
 <tr class="separator:ae9931199831697f4bfb1e88d4410ca07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b65c2ba5af4f2238c4eb385ff1cf5ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnemy.html#a7b65c2ba5af4f2238c4eb385ff1cf5ee">shooting</a> (int &amp;points, glm::vec3 pv, glm::vec3 v)</td></tr>
+<tr class="separator:a7b65c2ba5af4f2238c4eb385ff1cf5ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac71ea51a07298940e42b533fbb52d8a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnemy.html#ac71ea51a07298940e42b533fbb52d8a9">playerAlive</a> (glm::vec3 v)</td></tr>
+<tr class="separator:ac71ea51a07298940e42b533fbb52d8a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a3964e9796e01f5932eee35238383e18a"><td class="memItemLeft" align="right" valign="top">static std::stack&lt; <a class="el" href="classEnemy.html">Enemy</a> * &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnemy.html#a3964e9796e01f5932eee35238383e18a">deadStack</a></td></tr>
+<tr class="separator:a3964e9796e01f5932eee35238383e18a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -149,6 +159,24 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ac71ea51a07298940e42b533fbb52d8a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac71ea51a07298940e42b533fbb52d8a9">&#9670;&nbsp;</a></span>playerAlive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Enemy::playerAlive </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ae9931199831697f4bfb1e88d4410ca07"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae9931199831697f4bfb1e88d4410ca07">&#9670;&nbsp;</a></span>render()</h2>
 
@@ -183,7 +211,63 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a7b65c2ba5af4f2238c4eb385ff1cf5ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b65c2ba5af4f2238c4eb385ff1cf5ee">&#9670;&nbsp;</a></span>shooting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Enemy::shooting </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>pv</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a3964e9796e01f5932eee35238383e18a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3964e9796e01f5932eee35238383e18a">&#9670;&nbsp;</a></span>deadStack</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::stack&lt;<a class="el" href="classEnemy.html">Enemy</a>*&gt;* Enemy::deadStack</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aabb30890aaf0b6bdc1922688a90b2cd1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aabb30890aaf0b6bdc1922688a90b2cd1">&#9670;&nbsp;</a></span>facing</h2>
 
