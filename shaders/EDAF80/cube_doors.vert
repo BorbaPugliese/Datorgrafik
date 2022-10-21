@@ -6,9 +6,11 @@ uniform mat4 vertex_model_to_world;
 uniform mat4 vertex_world_to_clip;
 uniform float t;
 
+
 out VS_OUT {
     vec3 vertex;
 	float flicker;
+	float time;
 } vs_out;
 
 
@@ -25,7 +27,14 @@ void main()
 {
 	float time = t;
     vs_out.vertex = vec3(vertex_model_to_world * vec4(vertex, 1.0));
-	vs_out.flicker = clamp(Flickering(0.3f, time, 1, time*2) + Flickering(0.3f, time, 2.3, time*3) + Flickering(0.4f, time, 1.7, time*5) + Flickering(0.01f, time, 3, 3), 0, 1.2);
+
+	if (time>10){
+		time = time-10;
+		vs_out.flicker = clamp(Flickering(0.3f, time, 1, time*2) + Flickering(0.3f, time, 2.3, time*3) + Flickering(0.4f, time, 1.7, time*5) + Flickering(0.01f, time, 3, 1.5), 0, 1.2);
+		}
+	else{
+	vs_out.flicker = 1;
+	}
 
     gl_Position = vertex_world_to_clip * vertex_model_to_world * vec4(vertex, 1.0);
 }

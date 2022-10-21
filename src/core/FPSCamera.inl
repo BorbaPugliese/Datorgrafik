@@ -51,7 +51,7 @@ void FPSCamera<T, P>::Update(std::chrono::microseconds deltaTime, InputHandler &
 	glm::tvec2<T, P> newMousePosition = glm::tvec2<T, P>(ih.GetMousePosition().x, ih.GetMousePosition().y);
 	glm::tvec2<T, P> mouse_diff = newMousePosition - mMousePosition;
 	mMousePosition = newMousePosition;
-
+	
 	if (!ih.IsMouseCapturedByUI() && !ignoreMouseEvents && (ih.GetMouseState(GLFW_MOUSE_BUTTON_LEFT) & PRESSED)) {
 		mouse_diff.y = -mouse_diff.y;
 		mouse_diff *= mMouseSensitivity;

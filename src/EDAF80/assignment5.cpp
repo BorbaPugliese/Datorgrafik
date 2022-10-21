@@ -1,5 +1,7 @@
 #include "assignment5.hpp"
 #include "parametric_shapes.hpp"
+#include "Enemy.hpp"
+#include <stack>
 
 #include "config.hpp"
 #include "core/Bonobo.h"
@@ -43,7 +45,7 @@ edaf80::Assignment5::run()
 	mCamera.mWorld.SetTranslate(glm::vec3(0.0f, 0.0f, 6.0f));
 	mCamera.mWorld.LookAt(glm::vec3(0.0f));
 	mCamera.mMouseSensitivity = glm::vec2(0.003f);
-	mCamera.mMovementSpeed = glm::vec3(10.0f); // 3 m/s => 10.8 km/h
+	mCamera.mMovementSpeed = glm::vec3(40.0f); // 3 m/s => 10.8 km/h
 	auto camera_position = mCamera.mWorld.GetTranslation();
 
 	// Create the shader programs
@@ -77,11 +79,13 @@ edaf80::Assignment5::run()
 	auto const light_position = glm::vec3(-2.0f, 4.0f, 2.0f);
 	bool use_normal_mapping = false;
 	float elapsed_time_s = 0.0f;
-	auto const set_uniforms = [&use_normal_mapping, &light_position, &camera_position, &elapsed_time_s](GLuint program) {
+	bool player_alive = true;
+	auto const set_uniforms = [&use_normal_mapping, &light_position, &camera_position, &elapsed_time_s, &player_alive](GLuint program) {
 		glUniform1i(glGetUniformLocation(program, "use_normal_mapping"), use_normal_mapping ? 1 : 0);
 		glUniform3fv(glGetUniformLocation(program, "light_position"), 1, glm::value_ptr(light_position));
 		glUniform3fv(glGetUniformLocation(program, "camera_position"), 1, glm::value_ptr(camera_position));
 		glUniform1f(glGetUniformLocation(program, "t"), elapsed_time_s);
+		glUniform1f(glGetUniformLocation(program, "player_alive"), player_alive);
 	};
 
 	auto skybox_shape = parametric_shapes::createSphere(200.0f, 1000u, 1000u);
@@ -103,13 +107,16 @@ edaf80::Assignment5::run()
 	skybox.set_geometry(skybox_shape);
 	skybox.add_texture("cubemap", cubemap, GL_TEXTURE_CUBE_MAP);
 
-	auto enemy_shape = bonobo::loadObjects(config::resources_path("scenes/Enemy_Alien.obj"));
-	Node Enemy;
-	Enemy.set_geometry(enemy_shape[0]);
-	GLuint enemy_texture = bonobo::loadTexture2D(config::resources_path("textures/T_SEEKER_ORM_JPG.jpg"));
-	Enemy.add_texture("enemy_tex", enemy_texture, GL_TEXTURE_2D);
+	GLuint cubemap_dead = bonobo::loadTextureCubeMap(
+		config::resources_path("textures/green_error.jpg"),
+		config::resources_path("textures/green_error.jpg"),
+		config::resources_path("textures/green_error.jpg"),
+		config::resources_path("textures/green_error.jpg"),
+		config::resources_path("textures/green_error.jpg"),
+		config::resources_path("textures/green_error.jpg"));	
+	skybox.add_texture("cubemap_dead", cubemap_dead, GL_TEXTURE_CUBE_MAP);
 
-
+	Enemy* Enemy1 = new Enemy(glm::vec3(0, 0, 0));
 
 	//
 	// Todo: Insert the creation of other shader programs.
@@ -133,10 +140,6 @@ edaf80::Assignment5::run()
 	bool show_basis = false;
 	float basis_thickness_scale = 1.0f;
 	float basis_length_scale = 1.0f;
-
-	int collision(glm::vec3 u, glm::vec3 v) {
-		return = u - v * (dot(u, v));
-	}
 
 	int points = 0;
 	int r = 20; //Need to calculate 
@@ -169,17 +172,33 @@ edaf80::Assignment5::run()
 	//			current_state = NEW_GAME;
 	//		}
 
+
+	//To initialize the array of enemies
+	auto array_of_enemies = std::vector<Enemy*>();
+	float spawn_timer = 0;
+	auto spawn_locations = std::vector<glm::vec3>();
+	spawn_locations.push_back(glm::vec3(200, 0, 0));
+	spawn_locations.push_back(glm::vec3(-200, 0, 0));
+	spawn_locations.push_back(glm::vec3(0, 0, 200));
+	spawn_locations.push_back(glm::vec3(0, 0, -200));
+
+	for (int i = 0; i<6; i++) {
+		int random_index = rand() % 4;
+		array_of_enemies.push_back(new Enemy(spawn_locations[random_index]));
+	}
+
 	while (!glfwWindowShouldClose(window)) {
 		auto const nowTime = std::chrono::high_resolution_clock::now();
 		auto const deltaTimeUs = std::chrono::duration_cast<std::chrono::microseconds>(nowTime - lastTime);
 		lastTime = nowTime;
 		elapsed_time_s += std::chrono::duration<float>(deltaTimeUs).count();
+
 		auto& io = ImGui::GetIO();
 		inputHandler.SetUICapture(io.WantCaptureMouse, io.WantCaptureKeyboard);
-
+		
 		glfwPollEvents();
 		inputHandler.Advance();
-		mCamera.Update(deltaTimeUs, inputHandler);
+		mCamera.Update(deltaTimeUs, inputHandler); // this one
 		camera_position = mCamera.mWorld.GetTranslation();
 
 		if (inputHandler.GetKeycodeState(GLFW_KEY_R) & JUST_PRESSED) {
@@ -209,55 +228,49 @@ edaf80::Assignment5::run()
 		glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
 		glViewport(0, 0, framebuffer_width, framebuffer_height);
 
-
 		//
 		// Todo: If you need to handle inputs, you can do it here
-		//
-
+		// 
 
 		mWindowManager.NewImGuiFrame();
 
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
+		//std::cout << "spawn_timer:" << spawn_timer << std::endl;
+
 		if (!shader_reload_failed) {
 			//
 			// Todo: Render all your geometry here.
 			//
-			Enemy.render(mCamera.GetWorldToClipMatrix());
-			Enemy.set_program(&enemy_shader, set_uniforms);
 
 			skybox.render(mCamera.GetWorldToClipMatrix());
 			skybox.set_program(&skybox_shader, set_uniforms);
-			
-			Enemy.get_transform().SetTranslate(glm::vec3(200,0,0));
 
-			//Enemy.render(mCamera.GetWorldToClipMatrix());
-			//Enemy.set_program(&enemy_shader, set_uniforms);
+			if (player_alive) {
 
-		}
+				for (int i = 0; i < array_of_enemies.size(); i++) {
+					array_of_enemies[i]->render(mCamera.GetWorldToClipMatrix(), &enemy_shader, set_uniforms);
+					array_of_enemies[i]->moveTowardPlayer(camera_position);
+					bool player_alive_temp = array_of_enemies[i]->playerAlive(camera_position);
 
-		//To initialize the array of enemies
-		auto array_of_enemies = std::vector<glm::vec3>();
-
-		if (click_shooting){
-
-		auto pv = mCamera.mWorld.GetTranslation();
-		auto v = mCamera.mWorld.GetFront();
-
-		for (int i = 0; i < sizeof(array_of_enemies); i++) {
-
-			glm::vec3 ps = array_of_enemies[i]; //get the position of the enemy
-
-			//If hits the enemy
-			if (abs(collision(ps - pv, v) < r)) {
-				//Remove the enemy and gain points
-				int enemy = 1; // Here we call the function to remove the enemy
-				points = points + 1; //Idn why is not initialized 
+					if (!player_alive_temp) {
+						player_alive = false;
+					}
+				}
 			}
-
 		}
 
+		int state = glfwGetKey(window, GLFW_KEY_SPACE);
+		if (state == GLFW_PRESS)
+		{
+			auto pv = mCamera.mWorld.GetTranslation();
+			auto v = mCamera.mWorld.GetFront();
+
+			for (int i = 0; i < array_of_enemies.size(); i++) {
+				array_of_enemies[i]->shooting(points, pv, v);
+			}
 		}
+
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		//
