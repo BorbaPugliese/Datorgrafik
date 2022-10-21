@@ -70,13 +70,9 @@ void main()
 	float eta = 1.0f/1.33f;
 	vec3 refraction = refract(-V, TBN*n_bump.xyz, eta);
 
-	
-    vec3 reflection = reflect(V*mat3(-1,0,0,0,1,0,0,0,-1), TBN*n_bump.xyz);
+	V.y*=-1;
+    vec3 reflection = reflect(-V, TBN*n_bump.xyz);
 
 	color_water = mix(color_deep, color_shallow, facing) + texture(cubemap, reflection) * fresnel + texture(cubemap, refraction) * (1 - fresnel);
-	//if (1.0 - d > 1) {
-	//color_water = vec4(fresnel,0,0,0);
-	//};
 
-	//color_water = texture(normal_map, fs_in.textcoords.xy);
 }

@@ -82,7 +82,6 @@ bool Enemy::playerAlive(glm::vec3 v) {
 	glm::vec3 distance = ps - v;
 
 	if (glm::length(distance) < 20) {
-		std::cout << "TA MORTO" << std::endl;
 		return false;
 	}
 	else {

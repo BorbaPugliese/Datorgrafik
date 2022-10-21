@@ -11,5 +11,5 @@ out vec4 frag_color;
 
 void main()
 {
-    frag_color = texture(enemy_tex, fs_in.vertex)*fs_in.flicker;
+    frag_color = vec4(1,0,0,0);// texture(enemy_tex, fs_in.vertex);
 }

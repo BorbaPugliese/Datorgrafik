@@ -15,7 +15,7 @@ out vec4 frag_color;
 void main()
 {
 	if (!player_alive){
-		frag_color = texture(cubemap_dead, fs_in.vertex)*fs_in.flicker;
+		frag_color = texture(cubemap_dead, fs_in.vertex);
 	}
 	else{
 		frag_color = texture(cubemap, fs_in.vertex)*fs_in.flicker;

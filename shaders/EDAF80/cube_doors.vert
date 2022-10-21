@@ -18,11 +18,6 @@ float Flickering(float base, float time, float phase, float period){
 	return pow(base, mod((time-phase), period));
 }
 
-
-float Piscando(float time){
-	return exp(sin(time));
-}
-
 void main()
 {
 	float time = t;

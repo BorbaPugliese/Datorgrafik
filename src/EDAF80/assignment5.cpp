@@ -75,6 +75,14 @@ edaf80::Assignment5::run()
 		enemy_shader);
 	if (enemy_shader == 0u)
 		LogError("Failed to load enemy shader");
+	
+	GLuint quad_shader = 0u;
+	program_manager.CreateAndRegisterProgram("Quad",
+		{ { ShaderType::vertex, "EDAF80/quad.vert" },
+		  { ShaderType::fragment, "EDAF80/quad.frag" } },
+		quad_shader);
+	if (quad_shader == 0u)
+		LogError("Failed to load quad shader");
 
 	auto const light_position = glm::vec3(-2.0f, 4.0f, 2.0f);
 	bool use_normal_mapping = false;
@@ -116,13 +124,24 @@ edaf80::Assignment5::run()
 		config::resources_path("textures/green_error.jpg"));	
 	skybox.add_texture("cubemap_dead", cubemap_dead, GL_TEXTURE_CUBE_MAP);
 
+	//Creating the crosshair
+	
+	auto quad1 = parametric_shapes::createQuadCrosshair(0.4f/16, 0.1f / 9, 10, 10);
+	Node quadratic1;
+	quadratic1.set_geometry(quad1);
+	quadratic1.get_transform().SetTranslate(glm::vec3(-0.15 / 16, 0, 0));
+
+	auto quad2 = parametric_shapes::createQuadCrosshair(0.1f / 16, 0.4f / 9, 10, 10);
+	Node quadratic2;
+	quadratic2.set_geometry(quad2);
+	quadratic2.get_transform().SetTranslate(glm::vec3(0, -0.15 / 9, 0));
+
 	Enemy* Enemy1 = new Enemy(glm::vec3(0, 0, 0));
 
 	//
 	// Todo: Insert the creation of other shader programs.
 	//       (Check how it was done in assignment 3.)
 	
-
 	//
 	// Todo: Load your geometry
 	//
@@ -130,7 +149,6 @@ edaf80::Assignment5::run()
 	glClearDepthf(1.0f);
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-
 
 	auto lastTime = std::chrono::high_resolution_clock::now();
 
@@ -236,12 +254,14 @@ edaf80::Assignment5::run()
 
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-		//std::cout << "spawn_timer:" << spawn_timer << std::endl;
-
 		if (!shader_reload_failed) {
 			//
 			// Todo: Render all your geometry here.
 			//
+			quadratic1.render(mCamera.GetWorldToClipMatrix());
+			quadratic1.set_program(&quad_shader, set_uniforms);
+			quadratic2.render(mCamera.GetWorldToClipMatrix());
+			quadratic2.set_program(&quad_shader, set_uniforms);
 
 			skybox.render(mCamera.GetWorldToClipMatrix());
 			skybox.set_program(&skybox_shader, set_uniforms);
